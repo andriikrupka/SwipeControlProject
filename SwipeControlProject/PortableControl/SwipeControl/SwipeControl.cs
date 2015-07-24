@@ -5,6 +5,7 @@ namespace SwipeControl
 {
     public sealed class SwipeControl : SwipeControlBase
     {
+        
         public SwipeControl()
         {
             DefaultStyleKey = typeof(SwipeControl);

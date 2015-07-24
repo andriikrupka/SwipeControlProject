@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
+using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -45,7 +45,8 @@ namespace SwipeControl
 
         protected SwipeControlBase()
         {
-            SizeChanged += OnSizeChanged;
+            Loaded += OnLoaded;
+            Unloaded += OnUnloaded;
         }
 
         protected override void OnApplyTemplate()
@@ -55,16 +56,47 @@ namespace SwipeControl
 
             if (contentPresenter != null)
             {
-
                 contentPresenter.ManipulationMode = ManipulationModes.System | ManipulationModes.TranslateX;
                 contentPresenter.ManipulationStarting += OnManipulationStarting;
                 contentPresenter.ManipulationStarted += OnManipulationStarted;
                 contentPresenter.ManipulationDelta += OnManipulationDelta;
                 contentPresenter.ManipulationCompleted += OnManipulationCompleted;
-
-                translateTransfrom = base.GetTemplateChild("ContentPresenterTranslateTransform") as TranslateTransform;
-                middleValue = this.ActualWidth / 2;
+                translateTransfrom = GetTemplateChild("ContentPresenterTranslateTransform") as TranslateTransform;
+                middleValue = ActualWidth / 2;
             }
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            middleValue = ActualWidth / 2;
+
+            SizeChanged += OnSizeChanged;
+            Window.Current.CoreWindow.PointerPressed += OnCoreWindowPointerPressed;
+        }  
+
+        private void OnCoreWindowPointerPressed(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.PointerEventArgs args)
+        {
+            var ttv = TransformToVisual(Window.Current.Content);
+            var point = ttv.TransformPoint(new Point(0, 0));
+            if (!args.CurrentPoint.Position.X.IsBetween(point.X, point.X + ActualWidth) ||
+                !args.CurrentPoint.Position.Y.IsBetween(point.Y, point.Y + ActualHeight))
+            {
+                args.Handled = true;
+                Close();
+            }
+        }
+
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            Loaded -= OnLoaded;
+            Unloaded -= OnUnloaded;
+            SizeChanged -= OnSizeChanged;
+            Window.Current.CoreWindow.PointerPressed -= OnCoreWindowPointerPressed;
+        }
+
+        public void Close()
+        {
+            AnimateLeftPanel(translateTransfrom, "X", null, 0, TimeSpan.FromMilliseconds(300));
         }
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -95,7 +127,6 @@ namespace SwipeControl
         private void OnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs e)
         {
             this.currentOfsset = translateTransfrom.X;
-            Debug.WriteLine("OnManipulationStarting");
         }
 
         private void OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)

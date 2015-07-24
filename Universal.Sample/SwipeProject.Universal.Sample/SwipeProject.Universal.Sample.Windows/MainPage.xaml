@@ -6,35 +6,129 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:SwipeControl"
+    xmlns:vm="using:SwipeProject.Universal.Sample.ViewModel"
     mc:Ignorable="d">
+
+
+    <Page.Resources>
+        <vm:MainViewModel x:Name="MainViewModel"/>
+
+        <Style TargetType="ListViewItem" x:Key="DefaultListViewItemStyle">
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+        </Style>
+
+        <Style TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}"/>
+
+        <Style TargetType="ListViewItem" x:Key="ListViewItemWithoutEffectStyle" BasedOn="{StaticResource DefaultListViewItemStyle}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListViewItem">
+                        <Border x:Name="OuterContainer" RenderTransformOrigin="0.5,0.5">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal" />
+                                    <VisualState x:Name="Pressed"/>
+                                    <VisualState x:Name="CheckboxPressed"/>
+                                    <VisualState x:Name="Disabled"/>
+
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="SelectionStates">
+                                    <VisualState x:Name="Unselected" />
+                                    <VisualState x:Name="Selected"/>
+                                    <VisualState x:Name="SelectedUnfocused"/>
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="DataVirtualizationStates">
+                                    <VisualState x:Name="DataAvailable" />
+                                    <VisualState x:Name="DataPlaceholder"/>
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="MultiSelectStates">
+                                    <VisualState x:Name="NoMultiSelect" />
+                                    <VisualState x:Name="ListMultiSelect"/>
+                                    <VisualState x:Name="GridMultiSelect"/>
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="ReorderModeStates">
+                                    <VisualState x:Name="ReorderEnabled"/>
+                                    <VisualState x:Name="Reorderable"/>
+                                    <VisualState x:Name="ReorderDisabled" />
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="ReorderHintStates">
+                                    <VisualState x:Name="NoReorderHint" />
+                                    <VisualState x:Name="BottomReorderHint"/>
+                                    <VisualState x:Name="RightReorderHint"/>
+                                    <VisualState x:Name="TopReorderHint"/>
+                                    <VisualState x:Name="LeftReorderHint"/>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Grid x:Name="ReorderHintContent" Background="Transparent">
+                                <Border x:Name="ContentContainer">
+                                    <Border x:Name="ContentBorder"
+                                            Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}">
+                                        <Grid>
+                                            <ContentPresenter x:Name="contentPresenter"
+                                                              ContentTransitions="{TemplateBinding ContentTransitions}"
+                                                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                              Content="{TemplateBinding Content}"
+                                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                              Margin="{TemplateBinding Padding}" />
+                                        </Grid>
+                                    </Border>
+                                </Border>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+
+    <Page.DataContext>
+        <Binding Source="{StaticResource MainViewModel}"/>
+    </Page.DataContext>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-        <controls:SwipeControl Background="Aquamarine"
-                               SwipeMode="LeftRight"
-                               VerticalAlignment="Center"
-                               VerticalContentAlignment="Center">
+        <ListView ItemsSource="{Binding DataSource}"
+                  ItemContainerStyle="{StaticResource ListViewItemWithoutEffectStyle}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <controls:SwipeControl Background="Aquamarine"
+                                           SwipeMode="FromRight"
+                                           VerticalAlignment="Center"
+                                           VerticalContentAlignment="Center">
 
-            <controls:SwipeControl.LeftPanel>
-                <Grid Width="100"
-                      Background="Red">
+                        <controls:SwipeControl.LeftPanel>
+                            <Grid Width="100"
+                                  Background="Red">
 
-                </Grid>
-            </controls:SwipeControl.LeftPanel>
+                            </Grid>
+                        </controls:SwipeControl.LeftPanel>
 
-            <controls:SwipeControl.RightPanel>
-                <Grid Width="100"
-                      Background="Orange">
+                        <controls:SwipeControl.RightPanel>
+                            <Grid Width="100"
+                                  Background="Orange">
+                                <Button Content="Button"
+                                        Command="{Binding ClickCommand,Source={StaticResource MainViewModel}}"
+                                        CommandParameter="{Binding }">
+                                    
+                                </Button>
+                            </Grid>
+                        </controls:SwipeControl.RightPanel>
 
-                </Grid>
-            </controls:SwipeControl.RightPanel>
-
-            <Grid HorizontalAlignment="Stretch"
-                  Background="Black">
-                <TextBlock Text="Binding"
-                           FontSize="55"/>
-            </Grid>
-        </controls:SwipeControl>
+                        <Grid HorizontalAlignment="Stretch"
+                              Background="Black">
+                            <TextBlock Text="{Binding}"
+                                       FontSize="55"/>
+                        </Grid>
+                    </controls:SwipeControl>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
 
     </Grid>
 </Page>
