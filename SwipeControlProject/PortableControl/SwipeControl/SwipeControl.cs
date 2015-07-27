@@ -1,5 +1,6 @@
 ﻿using System;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media.Animation;
 
 namespace SwipeControl
 {
@@ -46,7 +47,7 @@ namespace SwipeControl
                 }
             }
 
-            AnimateLeftPanel(translateTransfrom, "X", previousOffset, currentOfsset, TimeSpan.FromMilliseconds(300));
+            AnimateLeftPanel(translateTransfrom, "X", previousOffset, currentOfsset, TimeSpan.FromMilliseconds(300), new CubicEase());
         }
     }
 }

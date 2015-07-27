@@ -96,7 +96,7 @@ namespace SwipeControl
 
         public void Close()
         {
-            AnimateLeftPanel(translateTransfrom, "X", null, 0, TimeSpan.FromMilliseconds(300));
+            AnimateLeftPanel(translateTransfrom, "X", null, 0, TimeSpan.FromMilliseconds(300), new CubicEase());
         }
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -105,7 +105,7 @@ namespace SwipeControl
 
             if (!isUserDrugging && translateTransfrom != null && translateTransfrom.X != 0)
             {
-                AnimateLeftPanel(translateTransfrom, "X", null, middleValue * Math.Sign(translateTransfrom.X), TimeSpan.FromMilliseconds(100));
+                AnimateLeftPanel(translateTransfrom, "X", null, middleValue * Math.Sign(translateTransfrom.X), TimeSpan.FromMilliseconds(100), new CubicEase());
             }
         }
 
@@ -114,11 +114,11 @@ namespace SwipeControl
             isUserDrugging = false;
             if (Math.Abs(currentOfsset) > middleValue / 2)
             {
-                AnimateLeftPanel(translateTransfrom, "X", currentOfsset, middleValue * Math.Sign(currentOfsset), TimeSpan.FromMilliseconds(300));
+                AnimateLeftPanel(translateTransfrom, "X", currentOfsset, middleValue * Math.Sign(currentOfsset), TimeSpan.FromMilliseconds(300), new CubicEase());
             }
             else
             {
-                AnimateLeftPanel(translateTransfrom, "X", currentOfsset, 0, TimeSpan.FromMilliseconds(300));
+                AnimateLeftPanel(translateTransfrom, "X", currentOfsset, 0, TimeSpan.FromMilliseconds(300), new CubicEase());
             }
         }
 
@@ -134,12 +134,13 @@ namespace SwipeControl
             this.isUserDrugging = true;
         }
 
-        protected void AnimateLeftPanel(DependencyObject target, string property, double? from, double to, TimeSpan durationTimeSpane)
+        protected void AnimateLeftPanel(DependencyObject target, string property, double? from, double to, TimeSpan durationTimeSpane, EasingFunctionBase easingFunction)
         {
             var doubleAnimation = new DoubleAnimation
             {
                 To = to,
                 From = from,
+                EasingFunction= easingFunction,
                 EnableDependentAnimation = true,
             };
 
